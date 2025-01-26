@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Main{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Welcome</h1>
+        <div class="buttons">
+            {% if not username %}
+                <button onclick="window.location.href='/signup'">Sign Up</button>
+                <button onclick="window.location.href='/signin'">Sign In</button>
+            {% else %}
+                <button onclick="window.location.href='/chat'">Go to Chat</button>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
