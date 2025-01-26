@@ -1,6 +1,6 @@
 from typing import Union, List, Dict
 from db.db_models import UserModel, MessageModel
-from routers.user_router.services import get_password_hash
+from logger.logger import logger
 
 
 async def get_user(*, username: str) -> Union[UserModel, None]:
@@ -13,24 +13,32 @@ async def get_user(*, username: str) -> Union[UserModel, None]:
     Returns:
         Union[UserModel, None]: The user if found, otherwise None.
     """
-    return await UserModel.get_or_none(username=username)
+    try:
+        return await UserModel.get_or_none(username=username)
+    except Exception as ex:
+        logger.error(f"An error occurred in getting user from db: {ex}")
+        raise ex
 
 
-async def create_user(*, username: str, password: str) -> None:
+async def create_user(*, username: str, hashed_pass: str) -> None:
     """
     Create a new user and store them in the database with a hashed password.
 
     Args:
         username (str): The username of the new user.
-        password (str): The password of the new user.
+        hashed_pass (str): The hashed password of the new user.
 
     Returns:
         None: This function does not return anything.
     """
-    hashed_pass = get_password_hash(password)
-    await UserModel.create(
-        username=username, hashed_password=hashed_pass
-    )
+    try:
+        await UserModel.create(
+            username=username, hashed_password=hashed_pass
+        )
+        logger.info(f"User {username} created successfully")
+    except Exception as ex:
+        logger.error(f"An error occurred in creating user method: {ex}")
+        raise ex
 
 
 async def get_chat_history(*, user: UserModel) -> List[MessageModel]:
@@ -43,8 +51,13 @@ async def get_chat_history(*, user: UserModel) -> List[MessageModel]:
     Returns:
         List[MessageModel]: A list of messages associated with the user.
     """
-    if user:
-        return await MessageModel.filter(user=user)
+    try:
+        if user:
+            return await MessageModel.filter(user=user)
+        logger.error(f"User {user.username} didn't found")
+    except Exception as ex:
+        logger.error(f"An error occurred in getting chat history method: {ex}")
+        raise ex
 
 
 async def save_message_to_db(*, user: UserModel, message: Dict[str, str]) -> None:
@@ -58,9 +71,14 @@ async def save_message_to_db(*, user: UserModel, message: Dict[str, str]) -> Non
     Returns:
         None: This function does not return anything.
     """
-    if user:
-        await MessageModel.create(
-            user=user,
-            content=message["content"],
-            role=message["role"]
-        )
+    try:
+        if user:
+            await MessageModel.create(
+                user=user,
+                content=message["content"],
+                role=message["role"]
+            )
+            logger.info(f"Message saved to db successfully: {message}")
+    except Exception as ex:
+        logger.error(f"An error occurred in saving message to db method: {ex}")
+        raise ex

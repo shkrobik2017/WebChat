@@ -38,7 +38,7 @@ class Settings(BaseSettings):
         description="The name of the PostgreSQL database to connect to."
     )
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: str = Field(
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(
         ...,
         description="Expiration time for access tokens in minutes."
     )

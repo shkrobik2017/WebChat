@@ -2,6 +2,8 @@ from typing import List, Tuple
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
+
+from logger.logger import logger
 from settings import settings
 
 
@@ -80,6 +82,8 @@ class MainAgent:
         Returns:
             str: The model's generated response based on the chat history.
         """
+        logger.info("Generating LLM answer process is started")
+
         prompt: str = await self.prompt_template()
         new_chat_history = self.messages_to_prompt(chat_history)
 
@@ -87,4 +91,5 @@ class MainAgent:
 
         result = await self.model.ainvoke(messages)
 
+        logger.info("LLM answer generated successfully")
         return result.content

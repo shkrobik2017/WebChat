@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from fastapi.responses import RedirectResponse
 from db.db_models import UserModel
 from db.db_repository import get_user
+from logger.logger import logger
 from settings import settings
 
 
@@ -26,10 +27,13 @@ async def get_token_from_cookie_ws(cookies: Dict[bytes, bytes]) -> str:
         token: Optional[str] = cookie_value.split("=")[1].replace('"', "")
         if token.startswith("Bearer "):
             return token[len("Bearer "):]
+
+        logger.error("Invalid token format")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid token format"
         )
+    logger.error("Token not found")
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Token not found"
