@@ -29,8 +29,8 @@ To run the project, you need the following tools installed:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/chat-application.git
-cd chat-application
+git clone https://github.com/shkrobik2017/WebChat.git
+cd src
 ```
 
 ### Configure Environment Variables
